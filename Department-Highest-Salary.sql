@@ -1,19 +1,10 @@
-WITH
-  EmployeesWithMaxSalaryInDepartment AS (
-    SELECT
-      Department.name AS department,
-      Employee.name AS employee,
-      Employee.salary,
-      MAX(Employee.salary) OVER(
-        PARTITION BY Employee.departmentId
-      ) AS max_salary
-    FROM Employee
-    LEFT JOIN Department
-      ON (Employee.departmentId = Department.id)
-  )
-SELECT
-  department AS Department,
-  employee AS Employee,
-  salary AS Salary
-FROM EmployeesWithMaxSalaryInDepartment
+WITH ms AS (
+    SELECT 
+        d.name AS Department, e.name AS Employee, e.salary, 
+        MAX(e.salary) OVER (PARTITION BY e.departmentId) AS max_salary
+    FROM Employee e
+    LEFT JOIN Department d ON e.departmentId = d.id
+)
+SELECT 
+    Department, Employee, salary AS Salary FROM ms
 WHERE salary = max_salary;
